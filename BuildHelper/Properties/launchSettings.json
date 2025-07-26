@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "FixZLib": {
+      "commandName": "Project",
+      "commandLineArgs": "cmake-vcxproj-setup-arm64x V:\\mariadb-connector-odbc-for-win10-arm64\\arm64x-build\\libmariadb\\external\\zlib\\zlib.vcxproj"
+    },
+    "FixZLibSln": {
+      "commandName": "Project",
+      "commandLineArgs": "sln-clone-cp -u V:\\mariadb-connector-odbc-for-win10-arm64\\arm64x-build\\libmariadb\\external\\zlib\\zlib.sln * ARM64 ARM64EC"
+    },
+    "FixCSln": {
+      "commandName": "Project",
+      "commandLineArgs": "sln-clone-cp -u V:\\mariadb-connector-odbc-for-win10-arm64\\arm64x-build\\libmariadb\\mariadb-connector-c.sln * ARM64 ARM64EC"
+    },
+    "FixOdbcSln": {
+      "commandName": "Project",
+      "commandLineArgs": "sln-clone-cp -u V:\\mariadb-connector-odbc-for-win10-arm64\\arm64x-build\\mariadb_connector_odbc.sln * ARM64 ARM64EC"
+    }
+  }
+}
