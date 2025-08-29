@@ -188,6 +188,34 @@ namespace BuildHelper
             }
 
             {
+                var ConfigurationPropertyGroups = doc
+                    .Element(xmlns + "Project")!
+                    .Elements(xmlns + "PropertyGroup")
+                    .Where(it => it.Attribute("Label")?.Value == "Configuration")
+                    .ToImmutableArray();
+
+                // <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
+                // <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
+                // <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|ARM64'" Label="Configuration">
+                // <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|ARM64'" Label="Configuration">
+                foreach (XElement arm64Configuration in ConfigurationPropertyGroups)
+                {
+                    var arm64Condition = arm64Configuration.Attribute("Condition")?.Value ?? "";
+                    if (arm64Condition.Contains("|ARM64'"))
+                    {
+                        var arm64ECCondition = arm64Condition.Replace("|ARM64'", "|ARM64EC'");
+                        if (!ConfigurationPropertyGroups.Any(it => it.Attribute("Condition")?.Value == arm64ECCondition))
+                        {
+                            var arm64ECConfigurationPropertyGroup = Clone(arm64Configuration);
+                            arm64ECConfigurationPropertyGroup.SetAttributeValue("Condition", arm64ECCondition);
+                            arm64Configuration.AddAfterSelf(arm64ECConfigurationPropertyGroup);
+                            anyChanged = true;
+                        }
+                    }
+                }
+            }
+
+            {
                 var ProjectConfigurations = doc
                     .Element(xmlns + "Project")!
                     .Elements(xmlns + "ItemGroup")
@@ -237,34 +265,6 @@ namespace BuildHelper
                             PropertyGroup.Add(
                                 new XElement(xmlns + "BuildAsX", "true")
                             );
-                            anyChanged = true;
-                        }
-                    }
-                }
-            }
-
-            {
-                var ConfigurationPropertyGroups = doc
-                    .Element(xmlns + "Project")!
-                    .Elements(xmlns + "PropertyGroup")
-                    .Where(it => it.Attribute("Label")?.Value == "Configuration")
-                    .ToImmutableArray();
-
-                // <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
-                // <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
-                // <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|ARM64'" Label="Configuration">
-                // <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|ARM64'" Label="Configuration">
-                foreach (XElement arm64Configuration in ConfigurationPropertyGroups)
-                {
-                    var arm64Condition = arm64Configuration.Attribute("Condition")?.Value ?? "";
-                    if (arm64Condition.Contains("|ARM64'"))
-                    {
-                        var arm64ECCondition = arm64Condition.Replace("|ARM64'", "|ARM64EC'");
-                        if (!ConfigurationPropertyGroups.Any(it => it.Attribute("Condition")?.Value == arm64ECCondition))
-                        {
-                            var arm64ECConfigurationPropertyGroup = Clone(arm64Configuration);
-                            arm64ECConfigurationPropertyGroup.SetAttributeValue("Condition", arm64ECCondition);
-                            arm64Configuration.AddAfterSelf(arm64ECConfigurationPropertyGroup);
                             anyChanged = true;
                         }
                     }
