@@ -5,9 +5,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace BuildHelper.Helpers
+namespace LibBuildHelper
 {
-    internal class SlnHelper
+    public class SlnHelper
     {
         internal IEnumerable<string> LoadLinesFromFile(string slnFile)
         {
